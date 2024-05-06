@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  weight_tracker_api:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./scripts:/src/scripts
+      - ./src:/src/src
+      - ./alembic:/src/alembic
+    ports:
+      - "9000:9000"
+      - "5678:5678"

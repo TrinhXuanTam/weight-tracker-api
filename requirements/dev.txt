@@ -1,0 +1,5 @@
+-r base.txt
+black==23.10.0
+ruff==0.1.1
+fastapi==0.104.0
+debugpy==1.8.1
