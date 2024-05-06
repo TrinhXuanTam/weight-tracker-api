@@ -8,9 +8,21 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     volumes:
-      - ./scripts:/src/scripts
-      - ./src:/src/src
-      - ./alembic:/src/alembic
+      - ./:/src
     ports:
       - "9000:9000"
       - "5678:5678"
+  weight_tracker_db:
+    image: postgres:15-bookworm
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_data_backups:/backups
+      - ./scripts/postgres:/scripts
+
+volumes:
+  pg_data:
+  pg_data_backups:

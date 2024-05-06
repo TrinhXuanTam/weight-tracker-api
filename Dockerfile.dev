@@ -21,6 +21,5 @@ RUN useradd -m -d /src -s /bin/bash app \
     && chown -R app:app /src/* && chmod +x /src/scripts/*
 
 WORKDIR /src
-USER app
 
 CMD ["./scripts/start-dev.sh"]
