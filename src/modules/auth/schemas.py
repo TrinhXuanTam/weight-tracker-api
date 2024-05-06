@@ -3,6 +3,12 @@ from src.schemas import CustomSchema
 from pydantic import Field
 
 
+class SignInRequest(CustomSchema):
+    email: str = Field(..., description="Email of the user")
+    password: str = Field(..., description="Password of the user")
+    remember_me: bool = Field(False, description="Remember me")
+
+
 class SignUpRequest(CustomSchema):
     full_name: str = Field(..., description="Full name of the user")
     email: str = Field(..., description="Email of the user")
@@ -23,3 +29,8 @@ class UserDetail(CustomSchema):
             email=user.email,
             roles=[role.name for role in user.roles],
         )
+
+
+class AuthTokens(CustomSchema):
+    access_token: str = Field(..., description="Access token")
+    refresh_token: str = Field(..., description="Refresh token")
