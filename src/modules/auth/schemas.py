@@ -3,16 +3,13 @@ from src.schemas import CustomSchema
 from pydantic import Field
 
 
-class SignInRequest(CustomSchema):
-    """
-    Schema for a user sign-in request.
+class SignIn(CustomSchema):
+    """Schema for a user sign-in request.
 
-    :ivar email: The email address of the user trying to sign in.
-    :vartype email: str
-    :ivar password: The user's password.
-    :vartype password: str
-    :ivar remember_me: Flag to indicate if the user wants to be remembered (default: False).
-    :vartype remember_me: bool
+    Attributes:
+        email (str): The email address of the user trying to sign in.
+        password (str): The user's password.
+        remember_me (bool): Flag to indicate if the user wants to be remembered (default: False).
     """
 
     email: str = Field(..., description="Email of the user")
@@ -20,16 +17,13 @@ class SignInRequest(CustomSchema):
     remember_me: bool = Field(False, description="Remember me")
 
 
-class SignUpRequest(CustomSchema):
-    """
-    Schema for a user sign-up request.
+class SignUp(CustomSchema):
+    """Schema for a user sign-up request.
 
-    :ivar full_name: The full name of the user.
-    :vartype full_name: str
-    :ivar email: The user's email address.
-    :vartype email: str
-    :ivar password: The user's password.
-    :vartype password: str
+    Attributes:
+        full_name (str): The full name of the user.
+        email (str): The user's email address.
+        password (str): The user's password.
     """
 
     full_name: str = Field(..., description="Full name of the user")
@@ -38,17 +32,13 @@ class SignUpRequest(CustomSchema):
 
 
 class UserDetail(CustomSchema):
-    """
-    Schema representing detailed information about a user.
+    """Schema representing detailed information about a user.
 
-    :ivar id: The unique identifier of the user.
-    :vartype id: int
-    :ivar full_name: The user's full name.
-    :vartype full_name: str
-    :ivar email: The user's email address.
-    :vartype email: str
-    :ivar roles: A list of role names associated with the user.
-    :vartype roles: list[str]
+    Attributes:
+        id (int): The unique identifier of the user.
+        full_name (str): The user's full name.
+        email (str): The user's email address.
+        roles (list[str]): A list of role names associated with the user.
     """
 
     id: int = Field(..., description="User ID")
@@ -58,14 +48,13 @@ class UserDetail(CustomSchema):
 
     @staticmethod
     def from_model(user: User) -> "UserDetail":
-        """
-        Create a UserDetail schema instance from a User model instance.
+        """Create a UserDetail schema instance from a User model instance.
 
-        :param user: The User model instance.
-        :type user: User
+        Args:
+            user (User): The User model instance.
 
-        :return: A UserDetail instance containing the user's information.
-        :rtype: UserDetail
+        Returns:
+            UserDetail: A UserDetail instance containing the user's information.
         """
         return UserDetail(
             id=user.id,
@@ -76,13 +65,11 @@ class UserDetail(CustomSchema):
 
 
 class AuthTokens(CustomSchema):
-    """
-    Schema representing authentication tokens.
+    """Schema representing authentication tokens.
 
-    :ivar access_token: The access token for the authenticated session.
-    :vartype access_token: str
-    :ivar refresh_token: The refresh token to obtain a new access token.
-    :vartype refresh_token: str
+    Attributes:
+        access_token (str): The access token for the authenticated session.
+        refresh_token (str): The refresh token to obtain a new access token.
     """
 
     access_token: str = Field(..., description="Access token")

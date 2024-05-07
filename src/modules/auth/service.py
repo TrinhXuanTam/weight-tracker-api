@@ -8,30 +8,27 @@ from src.modules.auth.repository import repository as auth_repository
 
 
 class AuthService:
-    """
-    A service class that handles user authentication, user retrieval, and account creation.
-    """
+    """A service class that handles user authentication, user retrieval, and account creation."""
 
     async def generate_tokens(self, email: str, password: str) -> AuthTokens:
-        """
-        Generate access and refresh tokens for a user if the credentials are valid.
+        """Generate access and refresh tokens for a user if the credentials are valid.
 
-        :param email: The email address of the user.
-        :type email: str
-        :param password: The plaintext password of the user.
-        :type password: str
+        Args:
+            email (str): The email address of the user.
+            password (str): The plaintext password of the user.
 
-        :return: An object containing the access and refresh tokens.
-        :rtype: AuthTokens
+        Returns:
+            AuthTokens: An object containing the access and refresh tokens.
 
-        :raises NotAuthenticated: If the user does not exist or the password is incorrect.
+        Raises:
+            NotAuthenticated: If the user does not exist or the password is incorrect.
         """
         # Retrieve user by email; validate that the user exists and their password is correct.
         user = await auth_repository.get_user_by_email(email)
         if not (user and user.validate_password(password)):
             raise NotAuthenticated("Invalid email or password")
 
-        # Generate an access token using the user's ID as the subject, and configured expiration time.
+        # Generate an access token using the user's ID as the subject and configured expiration time.
         access_token = create_token(
             data={"sub": user.id},
             secret=auth_config.JWT_ACCESS_SECRET,
@@ -51,16 +48,16 @@ class AuthService:
         return AuthTokens(access_token=access_token, refresh_token=refresh_token)
 
     async def get_user(self, user_id: int) -> UserDetail:
-        """
-        Retrieve user details by user ID.
+        """Retrieve user details by user ID.
 
-        :param user_id: The unique identifier of the user.
-        :type user_id: int
+        Args:
+            user_id (int): The unique identifier of the user.
 
-        :return: An object containing detailed information about the user.
-        :rtype: UserDetail
+        Returns:
+            UserDetail: An object containing detailed information about the user.
 
-        :raises NotFound: If the user with the given ID is not found.
+        Raises:
+            NotFound: If the user with the given ID is not found.
         """
         # Retrieve user by their unique ID; raise an exception if the user isn't found.
         user = await auth_repository.get_user_by_id(user_id)
@@ -77,22 +74,19 @@ class AuthService:
         password: str,
         roles: List[UserRole] = [UserRole.USER],
     ) -> UserDetail:
-        """
-        Create a new user with the specified details.
+        """Create a new user with the specified details.
 
-        :param full_name: The full name of the new user.
-        :type full_name: str
-        :param email: The email address of the new user.
-        :type email: str
-        :param password: The plaintext password for the new user.
-        :type password: str
-        :param roles: A list of roles to assign to the user. Defaults to a standard user role.
-        :type roles: List[UserRole]
+        Args:
+            full_name (str): The full name of the new user.
+            email (str): The email address of the new user.
+            password (str): The plaintext password for the new user.
+            roles (List[UserRole]): A list of roles to assign to the user. Defaults to a standard user role.
 
-        :return: An object containing detailed information about the newly created user.
-        :rtype: UserDetail
+        Returns:
+            UserDetail: An object containing detailed information about the newly created user.
 
-        :raises AlreadyExists: If a user with the provided email address already exists.
+        Raises:
+            AlreadyExists: If a user with the provided email address already exists.
         """
         # Check if a user with the provided email address already exists.
         existing_user = await auth_repository.get_user_by_email(email)

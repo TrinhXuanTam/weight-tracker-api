@@ -28,7 +28,7 @@ black:
 lint: ruff black
 
 db-make-migration:
-	docker compose exec weight_tracker_api alembic revision --autogenerate -m "$(args)"
+	docker compose exec weight_tracker_api alembic revision -m "$(args)"
 
 db-migrate:
 	docker compose exec weight_tracker_api alembic upgrade head

@@ -8,20 +8,16 @@ from src.modules.auth.config import auth_config
 
 
 def create_token(data: dict, secret: str, duration: int, algorithm: str) -> str:
-    """
-    Create a JWT token with the given payload data, expiration, and algorithm.
+    """Create a JWT token with the given payload data, expiration, and algorithm.
 
-    :param data: The payload data to encode into the token.
-    :type data: dict
-    :param secret: The secret key used to sign the token.
-    :type secret: str
-    :param duration: The expiration duration in minutes for the token.
-    :type duration: int
-    :param algorithm: The algorithm used to sign the token (e.g., HS256).
-    :type algorithm: str
+    Args:
+        data (dict): The payload data to encode into the token.
+        secret (str): The secret key used to sign the token.
+        duration (int): The expiration duration in minutes for the token.
+        algorithm (str): The algorithm used to sign the token (e.g., HS256).
 
-    :return: The generated JWT token as a string.
-    :rtype: str
+    Returns:
+        str: The generated JWT token as a string.
     """
     now = datetime.datetime.now()
     # Add "exp" (expiration) and "iat" (issued at) claims to the payload and encode.
@@ -33,18 +29,15 @@ def create_token(data: dict, secret: str, duration: int, algorithm: str) -> str:
 
 
 def decode_token(token: str, secret: str, algorithm: str) -> Optional[dict]:
-    """
-    Decode a JWT token, returning the payload if the token is valid.
+    """Decode a JWT token, returning the payload if the token is valid.
 
-    :param token: The JWT token to decode.
-    :type token: str
-    :param secret: The secret key used to verify the token.
-    :type secret: str
-    :param algorithm: The algorithm used to verify the token (e.g., HS256).
-    :type algorithm: str
+    Args:
+        token (str): The JWT token to decode.
+        secret (str): The secret key used to verify the token.
+        algorithm (str): The algorithm used to verify the token (e.g., HS256).
 
-    :return: The decoded payload if valid, or None if invalid.
-    :rtype: Optional[dict]
+    Returns:
+        Optional[dict]: The decoded payload if valid, or None if invalid.
     """
     try:
         # Decode the token with the specified secret and algorithm.
@@ -55,8 +48,7 @@ def decode_token(token: str, secret: str, algorithm: str) -> Optional[dict]:
 
 
 class HTTPBearerWithCookie(HTTPBearer):
-    """
-    A custom HTTPBearer security scheme that supports JWT tokens via cookies.
+    """A custom HTTPBearer security scheme that supports JWT tokens via cookies.
 
     Methods:
         __check_token_from_cookies: Retrieve and decode a token from cookies.
@@ -65,19 +57,16 @@ class HTTPBearerWithCookie(HTTPBearer):
 
     async def __check_token_from_cookies(
         self, token_key: str, secret_key: str, request: Request
-    ) -> str | None:
-        """
-        Retrieve and decode a JWT token from the request cookies.
+    ) -> Optional[str]:
+        """Retrieve and decode a JWT token from the request cookies.
 
-        :param token_key: The name of the cookie containing the token.
-        :type token_key: str
-        :param secret_key: The secret key used to verify the token.
-        :type secret_key: str
-        :param request: The HTTP request object.
-        :type request: Request
+        Args:
+            token_key (str): The name of the cookie containing the token.
+            secret_key (str): The secret key used to verify the token.
+            request (Request): The HTTP request object.
 
-        :return: The decoded payload if the token is valid, or None otherwise.
-        :rtype: str | None
+        Returns:
+            Optional[str]: The decoded payload if the token is valid, or None otherwise.
         """
         # Extract the token from cookies using the specified key.
         token = request.cookies.get(token_key)
@@ -87,17 +76,15 @@ class HTTPBearerWithCookie(HTTPBearer):
         # Decode the token with the secret and algorithm from the configuration.
         return decode_token(token, secret_key, auth_config.JWT_ALGORITHM)
 
-    async def __call__(self, request: Request, response: Response):
-        """
-        Validate the access token from cookies, refresh if necessary, or fall back to HTTP Bearer.
+    async def __call__(self, request: Request, response: Response) -> Optional[str]:
+        """Validate the access token from cookies, refresh if necessary, or fall back to HTTP Bearer.
 
-        :param request: The incoming HTTP request.
-        :type request: Request
-        :param response: The outgoing HTTP response.
-        :type response: Response
+        Args:
+            request (Request): The incoming HTTP request.
+            response (Response): The outgoing HTTP response.
 
-        :return: The valid access token or None if validation fails.
-        :rtype: str | None
+        Returns:
+            Optional[str]: The valid access token or None if validation fails.
         """
         # Check if a valid access token is in the cookies; remove if invalid.
         payload = await self.__check_token_from_cookies(
@@ -113,16 +100,9 @@ class HTTPBearerWithCookie(HTTPBearer):
             "refresh_token", auth_config.JWT_REFRESH_SECRET, request
         )
         if refresh_token:
-            # Decode the refresh token payload and create a new access token.
-            refresh_payload = decode_token(
-                refresh_token,
-                auth_config.JWT_REFRESH_SECRET,
-                auth_config.JWT_ALGORITHM,
-            )
-
             new_token = create_token(
                 {
-                    "sub": refresh_payload["sub"],
+                    "sub": refresh_token["sub"],
                 },
                 auth_config.JWT_ACCESS_SECRET,
                 auth_config.ACCESS_TOKEN_EXPIRE_MINUTES,

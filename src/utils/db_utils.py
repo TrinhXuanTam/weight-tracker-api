@@ -14,17 +14,12 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 class Base(DeclarativeBase):
-    """
-    A base class for SQLAlchemy models with common columns and a type mapping.
+    """A base class for SQLAlchemy models with common columns and a type mapping.
 
-    :cvar type_annotation_map: Maps Python types to SQLAlchemy types for annotation.
-    :vartype type_annotation_map: dict[str, Any]
-
-    :ivar created_at: Timestamp for when the record was created.
-    :vartype created_at: Mapped[datetime.datetime]
-
-    :ivar updated_at: Timestamp for the last time the record was updated.
-    :vartype updated_at: Mapped[datetime.datetime]
+    Attributes:
+        type_annotation_map (dict[str, Any]): Maps Python types to SQLAlchemy types for annotation.
+        created_at (Mapped[datetime.datetime]): Timestamp for when the record was created.
+        updated_at (Mapped[datetime.datetime]): Timestamp for the last time the record was updated.
     """
 
     type_annotation_map = {dict[str, Any]: JSON}
@@ -37,9 +32,9 @@ class Base(DeclarativeBase):
 
 
 async def close_db() -> None:
-    """
-    Close the asynchronous SQLAlchemy engine, releasing any resources.
+    """Close the asynchronous SQLAlchemy engine, releasing any resources.
 
-    :return: None
+    Returns:
+        None
     """
     await engine.dispose()

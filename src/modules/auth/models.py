@@ -7,13 +7,11 @@ from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 
 class Role(Base):
-    """
-    Represents a role that can be assigned to a user.
+    """Represents a role that can be assigned to a user.
 
-    :ivar id: The unique identifier for the role.
-    :vartype id: Mapped[int]
-    :ivar name: The name of the role.
-    :vartype name: Mapped[str]
+    Attributes:
+        id (Mapped[int]): The unique identifier for the role.
+        name (Mapped[str]): The name of the role.
     """
 
     __tablename__ = "role"
@@ -22,13 +20,11 @@ class Role(Base):
 
 
 class UserRole(Base):
-    """
-    Represents a relationship between a user and a role, implementing a many-to-many association.
+    """Represents a relationship between a user and a role, implementing a many-to-many association.
 
-    :ivar user_id: The unique identifier of the user.
-    :vartype user_id: Mapped[int]
-    :ivar role_id: The unique identifier of the role.
-    :vartype role_id: Mapped[int]
+    Attributes:
+        user_id (Mapped[int]): The unique identifier of the user.
+        role_id (Mapped[int]): The unique identifier of the role.
     """
 
     __tablename__ = "user_role"
@@ -37,19 +33,14 @@ class UserRole(Base):
 
 
 class User(Base):
-    """
-    Represents a user with authentication credentials and assigned roles.
+    """Represents a user with authentication credentials and assigned roles.
 
-    :ivar id: The unique identifier for the user.
-    :vartype id: Mapped[int]
-    :ivar full_name: The user's full name.
-    :vartype full_name: Mapped[str]
-    :ivar email: The user's unique email address.
-    :vartype email: Mapped[str]
-    :ivar hashed_password: The user's hashed password.
-    :vartype hashed_password: Mapped[bytes]
-    :ivar roles: A list of roles associated with the user, using a many-to-many relationship.
-    :vartype roles: Mapped[List[Role]]
+    Attributes:
+        id (Mapped[int]): The unique identifier for the user.
+        full_name (Mapped[str]): The user's full name.
+        email (Mapped[str]): The user's unique email address.
+        hashed_password (Mapped[bytes]): The user's hashed password.
+        roles (Mapped[List[Role]]): A list of roles associated with the user, using a many-to-many relationship.
     """
 
     __tablename__ = "user"
@@ -63,27 +54,23 @@ class User(Base):
 
     @staticmethod
     def hash_password(password: str) -> str:
-        """
-        Hash a plaintext password using bcrypt.
+        """Hash a plaintext password using bcrypt.
 
-        :param password: The plaintext password to hash.
-        :type password: str
+        Args:
+            password (str): The plaintext password to hash.
 
-        :return: The hashed password in bytes.
-        :rtype: str
+        Returns:
+            str: The hashed password in bytes.
         """
-        # Hash the password using bcrypt and return the resulting hash.
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
     def validate_password(self, password: str) -> bool:
-        """
-        Validate a plaintext password against the stored hashed password.
+        """Validate a plaintext password against the stored hashed password.
 
-        :param password: The plaintext password to validate.
-        :type password: str
+        Args:
+            password (str): The plaintext password to validate.
 
-        :return: True if the password matches, False otherwise.
-        :rtype: bool
+        Returns:
+            bool: True if the password matches, False otherwise.
         """
-        # Check if the provided plaintext password matches the stored hashed password.
         return bcrypt.checkpw(password.encode(), self.hashed_password)

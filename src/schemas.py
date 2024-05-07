@@ -1,20 +1,22 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, TypeVar, Generic
 from zoneinfo import ZoneInfo
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, ConfigDict, model_validator
 
+# Define a type variable for generic type hinting.
+T = TypeVar("T")
+
 
 def convert_datetime_to_gmt(dt: datetime) -> str:
-    """
-    Convert a datetime object to a string formatted in GMT (UTC).
+    """Convert a datetime object to a string formatted in GMT (UTC).
 
-    :param dt: The datetime object to convert.
-    :type dt: datetime
+    Args:
+        dt (datetime): The datetime object to convert.
 
-    :return: The formatted datetime string in the format "%Y-%m-%dT%H:%M:%S%z".
-    :rtype: str
+    Returns:
+        str: The formatted datetime string in the format "%Y-%m-%dT%H:%M:%S%z".
     """
     # If the datetime is naive (no timezone), convert it to UTC.
     if not dt.tzinfo:
@@ -25,11 +27,10 @@ def convert_datetime_to_gmt(dt: datetime) -> str:
 
 
 class CustomSchema(BaseModel):
-    """
-    A base model schema that provides custom validation and encoding behavior.
+    """A base model schema that provides custom validation and encoding behavior.
 
-    :cvar model_config: Configuration settings for JSON encoding and field population.
-    :vartype model_config: ConfigDict
+    Attributes:
+        model_config (ConfigDict): Configuration settings for JSON encoding and field population.
     """
 
     model_config = ConfigDict(
@@ -40,14 +41,13 @@ class CustomSchema(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def set_null_microseconds(cls, data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Remove microseconds from all datetime fields in the data dictionary.
+        """Remove microseconds from all datetime fields in the data dictionary.
 
-        :param data: A dictionary containing field names and values.
-        :type data: dict[str, Any]
+        Args:
+            data (dict[str, Any]): A dictionary containing field names and values.
 
-        :return: A new dictionary with datetime fields' microseconds set to zero.
-        :rtype: dict[str, Any]
+        Returns:
+            dict[str, Any]: A new dictionary with datetime fields' microseconds set to zero.
         """
         # Find and replace datetime fields' microseconds with zero to ensure consistency.
         datetime_fields = {
@@ -60,17 +60,26 @@ class CustomSchema(BaseModel):
         return {**data, **datetime_fields}
 
     def serializable_dict(self, **kwargs: Any) -> dict[str, Any]:
-        """
-        Return a dictionary representation of the model, including only serializable fields.
+        """Return a dictionary representation of the model, including only serializable fields.
 
-        :param kwargs: Additional arguments to pass to the encoder.
-        :type kwargs: Any
+        Args:
+            kwargs (Any): Additional arguments to pass to the encoder.
 
-        :return: A dictionary containing only serializable fields.
-        :rtype: dict[str, Any]
+        Returns:
+            dict[str, Any]: A dictionary containing only serializable fields.
         """
         # Get the default dictionary representation using Pydantic's model_dump.
         default_dict = self.model_dump()
 
         # Encode the dictionary using FastAPI's JSON encoder to ensure all fields are serializable.
         return jsonable_encoder(default_dict)
+
+
+class ListResponse(Generic[T], CustomSchema):
+    """A response schema for list-based responses.
+
+    Attributes:
+        items (list[T]): A list of items to include in the response.
+    """
+
+    items: list[T]

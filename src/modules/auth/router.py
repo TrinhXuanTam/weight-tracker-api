@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Response, status, Depends
 from src.modules.auth.config import auth_config
 from src.modules.auth.schemas import (
-    SignUpRequest,
-    SignInRequest,
+    SignUp,
+    SignIn,
     AuthTokens,
     UserDetail,
 )
@@ -18,14 +18,13 @@ router: APIRouter = APIRouter()
     description="Get the details of the user if authenticated.",
 )
 async def get_me(user: UserDetail = Depends(access_token_validation())) -> UserDetail:
-    """
-    Get the details of the authenticated user.
+    """Get the details of the authenticated user.
 
-    :param user: The authenticated user's information, retrieved via the ``access_token_validation`` dependency.
-    :type user: UserDetail
+    Args:
+        user (UserDetail): The authenticated user's information, retrieved via the `access_token_validation` dependency.
 
-    :return: The authenticated user's detailed information.
-    :rtype: UserDetail
+    Returns:
+        UserDetail: The authenticated user's detailed information.
     """
     return user
 
@@ -35,17 +34,15 @@ async def get_me(user: UserDetail = Depends(access_token_validation())) -> UserD
     summary="Sign in the user",
     description="Sign in the user with the provided email and password.",
 )
-async def sign_in(body: SignInRequest, response: Response) -> AuthTokens:
-    """
-    Sign in the user with the provided email and password.
+async def sign_in(body: SignIn, response: Response) -> AuthTokens:
+    """Sign in the user with the provided email and password.
 
-    :param body: The sign-in request containing the user's email, password, and an optional "remember_me" flag.
-    :type body: SignInRequest
-    :param response: The HTTP response object to set authentication cookies.
-    :type response: Response
+    Args:
+        body (SignIn): The sign-in request containing the user's email, password, and an optional "remember_me" flag.
+        response (Response): The HTTP response object to set authentication cookies.
 
-    :return: The generated access and refresh tokens for the authenticated user.
-    :rtype: AuthTokens
+    Returns:
+        AuthTokens: The generated access and refresh tokens for the authenticated user.
     """
     # Generate the access and refresh tokens.
     tokens = await auth_service.generate_tokens(body.email, body.password)
@@ -78,15 +75,14 @@ async def sign_in(body: SignInRequest, response: Response) -> AuthTokens:
     summary="Sign up a new user",
     description="Register a new user with the provided details.",
 )
-async def sign_up(body: SignUpRequest) -> UserDetail:
-    """
-    Register a new user with the given sign-up details.
+async def sign_up(body: SignUp) -> UserDetail:
+    """Register a new user with the given sign-up details.
 
-    :param body: The sign-up request containing the new user's information.
-    :type body: SignUpRequest
+    Args:
+        body (SignUp): The sign-up request containing the new user's information.
 
-    :return: The newly created user's detailed information.
-    :rtype: UserDetail
+    Returns:
+        UserDetail: The newly created user's detailed information.
     """
     return await auth_service.create_user(**body.dict())
 
@@ -98,13 +94,13 @@ async def sign_up(body: SignUpRequest) -> UserDetail:
     description="Sign out the user by deleting authentication cookies.",
 )
 async def sign_out(response: Response) -> None:
-    """
-    Sign out the user by deleting authentication cookies.
+    """Sign out the user by deleting authentication cookies.
 
-    :param response: The HTTP response object to remove authentication cookies.
-    :type response: Response
+    Args:
+        response (Response): The HTTP response object to remove authentication cookies.
 
-    :return: None
+    Returns:
+        None
     """
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")
