@@ -6,19 +6,56 @@ from src.modules.auth.models import Role, User
 
 
 class AuthRepository:
+    """
+    A repository class that provides data access methods for user and role management.
+    """
+
     async def get_roles_by_names(self, names: List[str]) -> List[Role]:
+        """
+        Retrieve a list of roles by their names.
+
+        Args:
+            names (List[str]): A list of role names to look up.
+
+        Returns:
+            List[Role]: A list of Role objects that match the given names.
+        """
+        # Query the roles matching the specified names using a SQLAlchemy `select` query.
         async with async_session() as session:
             result = await session.execute(select(Role).where(Role.name.in_(names)))
+            # Extract all matching role objects from the query results.
             return result.scalars().all()
 
     async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        """
+        Retrieve a user by their unique identifier.
+
+        Args:
+            user_id (int): The unique identifier of the user to retrieve.
+
+        Returns:
+            Optional[User]: The user object if found, or `None` if not found.
+        """
+        # Query the user table to find a user with the specified `user_id`.
         async with async_session() as session:
             result = await session.execute(select(User).where(User.id == user_id))
+            # Return the first matching user or `None` if not found.
             return result.scalars().first()
 
     async def get_user_by_email(self, email: str) -> Optional[User]:
+        """
+        Retrieve a user by their email address.
+
+        Args:
+            email (str): The email address of the user to retrieve.
+
+        Returns:
+            Optional[User]: The user object if found, or `None` if not found.
+        """
+        # Query the user table to find a user with the specified email address.
         async with async_session() as session:
             result = await session.execute(select(User).where(User.email == email))
+            # Return the first matching user or `None` if not found.
             return result.scalars().first()
 
     async def create_user(
@@ -28,8 +65,24 @@ class AuthRepository:
         password: str,
         roles: List[UserRole] = [UserRole.USER],
     ) -> User:
+        """
+        Create a new user with the specified information.
+
+        Args:
+            full_name (str): The full name of the new user.
+            email (str): The email address of the new user.
+            password (str): The plaintext password for the new user.
+            roles (List[UserRole]): A list of user roles to assign to the new user. Defaults to standard user role.
+
+        Returns:
+            User: The newly created user object.
+        """
+        # Retrieve the Role objects that correspond to the specified `UserRole` enum values.
         user_roles = await self.get_roles_by_names([role.value for role in roles])
+        # Hash the plaintext password using the User model's password hashing method.
         hashed_password = User.hash_password(password)
+
+        # Create a new user instance and commit the transaction to the database.
         async with async_session() as session:
             new_user = User(
                 full_name=full_name,
@@ -38,6 +91,7 @@ class AuthRepository:
                 roles=user_roles,
             )
             session.add(new_user)
+            # Commit the new user to the database and refresh it to get the updated state.
             await session.commit()
             await session.refresh(new_user)
             return new_user
