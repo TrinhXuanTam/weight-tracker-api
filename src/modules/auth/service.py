@@ -16,15 +16,15 @@ class AuthService:
         """
         Generate access and refresh tokens for a user if the credentials are valid.
 
-        Args:
-            email (str): The email address of the user.
-            password (str): The plaintext password of the user.
+        :param email: The email address of the user.
+        :type email: str
+        :param password: The plaintext password of the user.
+        :type password: str
 
-        Returns:
-            AuthTokens: An object containing the access and refresh tokens.
+        :return: An object containing the access and refresh tokens.
+        :rtype: AuthTokens
 
-        Raises:
-            NotAuthenticated: If the user does not exist or the password is incorrect.
+        :raises NotAuthenticated: If the user does not exist or the password is incorrect.
         """
         # Retrieve user by email; validate that the user exists and their password is correct.
         user = await auth_repository.get_user_by_email(email)
@@ -54,14 +54,13 @@ class AuthService:
         """
         Retrieve user details by user ID.
 
-        Args:
-            user_id (int): The unique identifier of the user.
+        :param user_id: The unique identifier of the user.
+        :type user_id: int
 
-        Returns:
-            UserDetail: An object containing detailed information about the user.
+        :return: An object containing detailed information about the user.
+        :rtype: UserDetail
 
-        Raises:
-            NotFound: If the user with the given ID is not found.
+        :raises NotFound: If the user with the given ID is not found.
         """
         # Retrieve user by their unique ID; raise an exception if the user isn't found.
         user = await auth_repository.get_user_by_id(user_id)
@@ -81,17 +80,19 @@ class AuthService:
         """
         Create a new user with the specified details.
 
-        Args:
-            full_name (str): The full name of the new user.
-            email (str): The email address of the new user.
-            password (str): The plaintext password for the new user.
-            roles (List[UserRole]): A list of roles to assign to the user. Defaults to a standard user role.
+        :param full_name: The full name of the new user.
+        :type full_name: str
+        :param email: The email address of the new user.
+        :type email: str
+        :param password: The plaintext password for the new user.
+        :type password: str
+        :param roles: A list of roles to assign to the user. Defaults to a standard user role.
+        :type roles: List[UserRole]
 
-        Returns:
-            UserDetail: An object containing detailed information about the newly created user.
+        :return: An object containing detailed information about the newly created user.
+        :rtype: UserDetail
 
-        Raises:
-            AlreadyExists: If a user with the provided email address already exists.
+        :raises AlreadyExists: If a user with the provided email address already exists.
         """
         # Check if a user with the provided email address already exists.
         existing_user = await auth_repository.get_user_by_email(email)

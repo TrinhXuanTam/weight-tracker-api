@@ -10,9 +10,10 @@ class Role(Base):
     """
     Represents a role that can be assigned to a user.
 
-    Attributes:
-        id (Mapped[int]): The unique identifier for the role.
-        name (Mapped[str]): The name of the role.
+    :ivar id: The unique identifier for the role.
+    :vartype id: Mapped[int]
+    :ivar name: The name of the role.
+    :vartype name: Mapped[str]
     """
 
     __tablename__ = "role"
@@ -24,9 +25,10 @@ class UserRole(Base):
     """
     Represents a relationship between a user and a role, implementing a many-to-many association.
 
-    Attributes:
-        user_id (Mapped[int]): The unique identifier of the user.
-        role_id (Mapped[int]): The unique identifier of the role.
+    :ivar user_id: The unique identifier of the user.
+    :vartype user_id: Mapped[int]
+    :ivar role_id: The unique identifier of the role.
+    :vartype role_id: Mapped[int]
     """
 
     __tablename__ = "user_role"
@@ -38,12 +40,16 @@ class User(Base):
     """
     Represents a user with authentication credentials and assigned roles.
 
-    Attributes:
-        id (Mapped[int]): The unique identifier for the user.
-        full_name (Mapped[str]): The user's full name.
-        email (Mapped[str]): The user's unique email address.
-        hashed_password (Mapped[bytes]): The user's hashed password.
-        roles (Mapped[List[Role]]): A list of roles associated with the user, using a many-to-many relationship.
+    :ivar id: The unique identifier for the user.
+    :vartype id: Mapped[int]
+    :ivar full_name: The user's full name.
+    :vartype full_name: Mapped[str]
+    :ivar email: The user's unique email address.
+    :vartype email: Mapped[str]
+    :ivar hashed_password: The user's hashed password.
+    :vartype hashed_password: Mapped[bytes]
+    :ivar roles: A list of roles associated with the user, using a many-to-many relationship.
+    :vartype roles: Mapped[List[Role]]
     """
 
     __tablename__ = "user"
@@ -60,11 +66,11 @@ class User(Base):
         """
         Hash a plaintext password using bcrypt.
 
-        Args:
-            password (str): The plaintext password to hash.
+        :param password: The plaintext password to hash.
+        :type password: str
 
-        Returns:
-            str: The hashed password in bytes.
+        :return: The hashed password in bytes.
+        :rtype: str
         """
         # Hash the password using bcrypt and return the resulting hash.
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
@@ -73,11 +79,11 @@ class User(Base):
         """
         Validate a plaintext password against the stored hashed password.
 
-        Args:
-            password (str): The plaintext password to validate.
+        :param password: The plaintext password to validate.
+        :type password: str
 
-        Returns:
-            bool: True if the password matches, False otherwise.
+        :return: True if the password matches, False otherwise.
+        :rtype: bool
         """
         # Check if the provided plaintext password matches the stored hashed password.
         return bcrypt.checkpw(password.encode(), self.hashed_password)

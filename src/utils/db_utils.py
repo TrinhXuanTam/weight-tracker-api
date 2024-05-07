@@ -17,10 +17,14 @@ class Base(DeclarativeBase):
     """
     A base class for SQLAlchemy models with common columns and a type mapping.
 
-    Attributes:
-        type_annotation_map (dict): Maps Python types to SQLAlchemy types for annotation.
-        created_at (Mapped[datetime.datetime]): Timestamp for when the record was created.
-        updated_at (Mapped[datetime.datetime]): Timestamp for the last time the record was updated.
+    :cvar type_annotation_map: Maps Python types to SQLAlchemy types for annotation.
+    :vartype type_annotation_map: dict[str, Any]
+
+    :ivar created_at: Timestamp for when the record was created.
+    :vartype created_at: Mapped[datetime.datetime]
+
+    :ivar updated_at: Timestamp for the last time the record was updated.
+    :vartype updated_at: Mapped[datetime.datetime]
     """
 
     type_annotation_map = {dict[str, Any]: JSON}
@@ -36,7 +40,6 @@ async def close_db() -> None:
     """
     Close the asynchronous SQLAlchemy engine, releasing any resources.
 
-    Returns:
-        None
+    :return: None
     """
     await engine.dispose()

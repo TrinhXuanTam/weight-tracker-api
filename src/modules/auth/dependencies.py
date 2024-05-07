@@ -15,32 +15,32 @@ def access_token_validation(
     """
     Dependency function to validate an access token, with role-based authorization checks.
 
-    Args:
-        required_roles (list[UserRole]): Roles that must be present for the validation to pass.
-        forbidden_roles (list[UserRole]): Roles that should not be present for validation to pass.
-        any_role (list[UserRole]): A list of roles where having any one of them allows validation to pass.
+    :param required_roles: Roles that must be present for the validation to pass.
+    :type required_roles: list[UserRole]
+    :param forbidden_roles: Roles that should not be present for validation to pass.
+    :type forbidden_roles: list[UserRole]
+    :param any_role: A list of roles where having any one of them allows validation to pass.
+    :type any_role: list[UserRole]
 
-    Returns:
-        Callable: A dependency function that validates a token and enforces role checks.
+    :return: A dependency function that validates a token and enforces role checks.
+    :rtype: Callable
 
-    Raises:
-        NotAuthenticated: If the token is invalid or expired.
-        PermissionDenied: If the user's roles do not meet the specified conditions.
+    :raises NotAuthenticated: If the token is invalid or expired.
+    :raises PermissionDenied: If the user's roles do not meet the specified conditions.
     """
 
     async def validate_token(token=Depends(jwt_cookie_security)) -> UserDetail:
         """
         Validate the given JWT token and apply role-based authorization checks.
 
-        Args:
-            token (str): The JWT token extracted from the request's cookies via the `jwt_cookie_security` dependency.
+        :param token: The JWT token extracted from the request's cookies via the ``jwt_cookie_security`` dependency.
+        :type token: str
 
-        Returns:
-            UserDetail: The authenticated user's detailed information.
+        :return: The authenticated user's detailed information.
+        :rtype: UserDetail
 
-        Raises:
-            NotAuthenticated: If the token is invalid or expired.
-            PermissionDenied: If the user's roles don't meet the required criteria.
+        :raises NotAuthenticated: If the token is invalid or expired.
+        :raises PermissionDenied: If the user's roles don't meet the required criteria.
         """
         # Decode the access token to get the user ID.
         payload = decode_token(

@@ -12,33 +12,40 @@ from src.modules.auth.dependencies import access_token_validation
 router: APIRouter = APIRouter()
 
 
-@router.get("/me")
+@router.get(
+    "/me",
+    summary="Get the authenticated user's details",
+    description="Get the details of the user if authenticated.",
+)
 async def get_me(user: UserDetail = Depends(access_token_validation())) -> UserDetail:
     """
     Get the details of the authenticated user.
 
-    Args:
-        user (UserDetail): The authenticated user's information, retrieved via the
-                           `access_token_validation` dependency.
+    :param user: The authenticated user's information, retrieved via the ``access_token_validation`` dependency.
+    :type user: UserDetail
 
-    Returns:
-        UserDetail: The authenticated user's detailed information.
+    :return: The authenticated user's detailed information.
+    :rtype: UserDetail
     """
     return user
 
 
-@router.post("/sign-in")
+@router.post(
+    "/sign-in",
+    summary="Sign in the user",
+    description="Sign in the user with the provided email and password.",
+)
 async def sign_in(body: SignInRequest, response: Response) -> AuthTokens:
     """
     Sign in the user with the provided email and password.
 
-    Args:
-        body (SignInRequest): The sign-in request containing the user's email, password,
-                              and an optional "remember_me" flag.
-        response (Response): The HTTP response object to set authentication cookies.
+    :param body: The sign-in request containing the user's email, password, and an optional "remember_me" flag.
+    :type body: SignInRequest
+    :param response: The HTTP response object to set authentication cookies.
+    :type response: Response
 
-    Returns:
-        AuthTokens: The generated access and refresh tokens for the authenticated user.
+    :return: The generated access and refresh tokens for the authenticated user.
+    :rtype: AuthTokens
     """
     # Generate the access and refresh tokens.
     tokens = await auth_service.generate_tokens(body.email, body.password)
@@ -66,30 +73,38 @@ async def sign_in(body: SignInRequest, response: Response) -> AuthTokens:
     return tokens
 
 
-@router.post("/sign-up")
+@router.post(
+    "/sign-up",
+    summary="Sign up a new user",
+    description="Register a new user with the provided details.",
+)
 async def sign_up(body: SignUpRequest) -> UserDetail:
     """
     Register a new user with the given sign-up details.
 
-    Args:
-        body (SignUpRequest): The sign-up request containing the new user's information.
+    :param body: The sign-up request containing the new user's information.
+    :type body: SignUpRequest
 
-    Returns:
-        UserDetail: The newly created user's detailed information.
+    :return: The newly created user's detailed information.
+    :rtype: UserDetail
     """
     return await auth_service.create_user(**body.dict())
 
 
-@router.post("/sign-out", status_code=status.HTTP_204_NO_CONTENT)
+@router.post(
+    "/sign-out",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Sign out the user",
+    description="Sign out the user by deleting authentication cookies.",
+)
 async def sign_out(response: Response) -> None:
     """
     Sign out the user by deleting authentication cookies.
 
-    Args:
-        response (Response): The HTTP response object to remove authentication cookies.
+    :param response: The HTTP response object to remove authentication cookies.
+    :type response: Response
 
-    Returns:
-        None
+    :return: None
     """
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")

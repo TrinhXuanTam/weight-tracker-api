@@ -10,11 +10,11 @@ def convert_datetime_to_gmt(dt: datetime) -> str:
     """
     Convert a datetime object to a string formatted in GMT (UTC).
 
-    Args:
-        dt (datetime): The datetime object to convert.
+    :param dt: The datetime object to convert.
+    :type dt: datetime
 
-    Returns:
-        str: The formatted datetime string in the format "%Y-%m-%dT%H:%M:%S%z".
+    :return: The formatted datetime string in the format "%Y-%m-%dT%H:%M:%S%z".
+    :rtype: str
     """
     # If the datetime is naive (no timezone), convert it to UTC.
     if not dt.tzinfo:
@@ -28,8 +28,8 @@ class CustomSchema(BaseModel):
     """
     A base model schema that provides custom validation and encoding behavior.
 
-    Attributes:
-        model_config (ConfigDict): Configuration settings for JSON encoding and field population.
+    :cvar model_config: Configuration settings for JSON encoding and field population.
+    :vartype model_config: ConfigDict
     """
 
     model_config = ConfigDict(
@@ -43,11 +43,11 @@ class CustomSchema(BaseModel):
         """
         Remove microseconds from all datetime fields in the data dictionary.
 
-        Args:
-            data (dict[str, Any]): A dictionary containing field names and values.
+        :param data: A dictionary containing field names and values.
+        :type data: dict[str, Any]
 
-        Returns:
-            dict[str, Any]: A new dictionary with datetime fields' microseconds set to zero.
+        :return: A new dictionary with datetime fields' microseconds set to zero.
+        :rtype: dict[str, Any]
         """
         # Find and replace datetime fields' microseconds with zero to ensure consistency.
         datetime_fields = {
@@ -63,11 +63,11 @@ class CustomSchema(BaseModel):
         """
         Return a dictionary representation of the model, including only serializable fields.
 
-        Args:
-            **kwargs (Any): Additional arguments to pass to the encoder.
+        :param kwargs: Additional arguments to pass to the encoder.
+        :type kwargs: Any
 
-        Returns:
-            dict[str, Any]: A dictionary containing only serializable fields.
+        :return: A dictionary containing only serializable fields.
+        :rtype: dict[str, Any]
         """
         # Get the default dictionary representation using Pydantic's model_dump.
         default_dict = self.model_dump()

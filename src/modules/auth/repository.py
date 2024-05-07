@@ -14,11 +14,11 @@ class AuthRepository:
         """
         Retrieve a list of roles by their names.
 
-        Args:
-            names (List[str]): A list of role names to look up.
+        :param names: A list of role names to look up.
+        :type names: List[str]
 
-        Returns:
-            List[Role]: A list of Role objects that match the given names.
+        :return: A list of Role objects that match the given names.
+        :rtype: List[Role]
         """
         # Query the roles matching the specified names using a SQLAlchemy `select` query.
         async with async_session() as session:
@@ -30,11 +30,11 @@ class AuthRepository:
         """
         Retrieve a user by their unique identifier.
 
-        Args:
-            user_id (int): The unique identifier of the user to retrieve.
+        :param user_id: The unique identifier of the user to retrieve.
+        :type user_id: int
 
-        Returns:
-            Optional[User]: The user object if found, or `None` if not found.
+        :return: The user object if found, or ``None`` if not found.
+        :rtype: Optional[User]
         """
         # Query the user table to find a user with the specified `user_id`.
         async with async_session() as session:
@@ -46,11 +46,11 @@ class AuthRepository:
         """
         Retrieve a user by their email address.
 
-        Args:
-            email (str): The email address of the user to retrieve.
+        :param email: The email address of the user to retrieve.
+        :type email: str
 
-        Returns:
-            Optional[User]: The user object if found, or `None` if not found.
+        :return: The user object if found, or ``None`` if not found.
+        :rtype: Optional[User]
         """
         # Query the user table to find a user with the specified email address.
         async with async_session() as session:
@@ -68,14 +68,17 @@ class AuthRepository:
         """
         Create a new user with the specified information.
 
-        Args:
-            full_name (str): The full name of the new user.
-            email (str): The email address of the new user.
-            password (str): The plaintext password for the new user.
-            roles (List[UserRole]): A list of user roles to assign to the new user. Defaults to standard user role.
+        :param full_name: The full name of the new user.
+        :type full_name: str
+        :param email: The email address of the new user.
+        :type email: str
+        :param password: The plaintext password for the new user.
+        :type password: str
+        :param roles: A list of user roles to assign to the new user. Defaults to standard user role.
+        :type roles: List[UserRole]
 
-        Returns:
-            User: The newly created user object.
+        :return: The newly created user object.
+        :rtype: User
         """
         # Retrieve the Role objects that correspond to the specified `UserRole` enum values.
         user_roles = await self.get_roles_by_names([role.value for role in roles])
