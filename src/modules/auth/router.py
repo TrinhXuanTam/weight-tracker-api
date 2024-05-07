@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, status, Depends
 from src.modules.auth.config import auth_config
-from src.modules.auth.schemas import SignUpRequest, SignInRequest, AuthTokens
+from src.modules.auth.schemas import (
+    SignUpRequest,
+    SignInRequest,
+    AuthTokens,
+    UserDetail,
+)
 from src.modules.auth.service import service as auth_service
+from src.modules.auth.dependencies import access_token_validation
 
 router: APIRouter = APIRouter()
+
+
+@router.get("/me")
+async def get_me(user: UserDetail = Depends(access_token_validation())) -> UserDetail:
+    return user
 
 
 @router.post("/sign-in")
@@ -32,12 +43,11 @@ async def sign_in(body: SignInRequest, response: Response) -> AuthTokens:
 
 
 @router.post("/sign-up")
-async def sign_up(body: SignUpRequest):
+async def sign_up(body: SignUpRequest) -> UserDetail:
     return await auth_service.create_user(**body.dict())
 
 
-@router.post("/sign-out")
-async def sign_out(response: Response):
+@router.post("/sign-out", status_code=status.HTTP_204_NO_CONTENT)
+async def sign_out(response: Response) -> None:
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")
-    return response

@@ -1,6 +1,6 @@
 from typing import List
 from src.utils.jwt_utils import create_token
-from src.exceptions import AlreadyExists, NotAuthenticated
+from src.exceptions import AlreadyExists, NotAuthenticated, NotFound
 from src.modules.auth.config import auth_config
 from src.modules.auth.schemas import UserDetail, AuthTokens
 from src.modules.auth.constants import UserRole
@@ -13,18 +13,24 @@ class AuthService:
         if not (user and user.validate_password(password)):
             raise NotAuthenticated("Invalid email or password")
         access_token = create_token(
-            data={"sub": user.email},
+            data={"sub": user.id},
             secret=auth_config.JWT_ACCESS_SECRET,
             duration=auth_config.ACCESS_TOKEN_EXPIRE_MINUTES,
             algorithm=auth_config.JWT_ALGORITHM,
         )
         refresh_token = create_token(
-            data={"sub": user.email},
+            data={"sub": user.id},
             secret=auth_config.JWT_REFRESH_SECRET,
             duration=auth_config.REFRESH_TOKEN_EXPIRE_MINUTES,
             algorithm=auth_config.JWT_ALGORITHM,
         )
         return AuthTokens(access_token=access_token, refresh_token=refresh_token)
+
+    async def get_user(self, user_id: int) -> UserDetail:
+        user = await auth_repository.get_user_by_id(user_id)
+        if not user:
+            raise NotFound("User not found")
+        return UserDetail.from_model(user)
 
     async def create_user(
         self,

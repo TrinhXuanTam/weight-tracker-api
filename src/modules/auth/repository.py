@@ -11,6 +11,11 @@ class AuthRepository:
             result = await session.execute(select(Role).where(Role.name.in_(names)))
             return result.scalars().all()
 
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        async with async_session() as session:
+            result = await session.execute(select(User).where(User.id == user_id))
+            return result.scalars().first()
+
     async def get_user_by_email(self, email: str) -> Optional[User]:
         async with async_session() as session:
             result = await session.execute(select(User).where(User.email == email))
